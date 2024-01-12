@@ -2,7 +2,10 @@ import ipdb
 
 class Game:
     def __init__(self, title):
+
         self.title = title
+        self._results = []
+        self._players = []
 
     @property
     def title(self):
@@ -12,11 +15,12 @@ class Game:
     @title.setter
     def title(self, title):
 
-        if((isinstance(title, str)) and (len(title) > 0) and (hasattr(self, "title") == False)):
+        if((isinstance(title, str)) and (0 < len(title)) and 
+        not (hasattr(self, "title"))):
             self._title = title
         
         else:
-            print("Invalid title or title was already made and can't be changed.")
+            raise Exception("Invalid title or title was already made and can't be changed.")
 
     def results(self):
         pass
@@ -28,8 +32,14 @@ class Game:
         pass
 
 class Player:
+
+    all = []
+
     def __init__(self, username):
+
         self.username = username
+        self._results = []
+        self._games_played = []
     
     @property
     def username(self):
@@ -43,12 +53,19 @@ class Player:
             self._username = username
         
         else:
-            print("That is not a valid username")
+            raise Exception("That is not a valid username")
 
-    def results(self):
-        pass
+    def results(self, new_result=None):
+        from classes.result import Result
 
-    def games_played(self):
+         if new_result and isinstance(new_result, Result):
+            if new_result not in self._results:
+                self._result.append(new_result)
+
+        return self._results # return a list of all the result
+
+    def games_played(self, new_game=None):
+        from classes.game import Game
         pass
 
     def played_game(self, game):
@@ -58,10 +75,16 @@ class Player:
         pass
 
 class Result:
+
+    all = []
+
     def __init__(self, player, game, score):
+        
         self.player = player
         self.game = game
         self.score = score
+
+        player.results(self)
     
     @property
     def score(self):
@@ -71,12 +94,39 @@ class Result:
     @score.setter
     def score(self, score):
 
-        if((isinstance(score, int)) and (0 < score < 5001) and (hasattr(self.score) == False)):
+        if((isinstance(score, int)) and (0 < score < 5001) and 
+        not (hasattr(self, "score"))):
             self._score = score
         
         else:
-            print("Invalid score or score was already made and can't be changed.")
+            raise Exception("Invalid score or score was already made and can't be changed.")
+    
+    @property
+    def player(self):
 
+        return self._player
+    
+    @player.setter
+    def player(self, player):
+        from classes.player import Player
 
-# game = Game("Name of Game")
-# ipdb.set_trace()
+        if isinstance(player, Player):
+            self._player = player
+        
+        else:
+            raise Exception("Player must be of instance of Player class")
+    
+    @property
+    def game(self):
+
+        return self._game
+    
+    @game.setter
+    def game(self, game):
+        from classes.game import Game
+
+        if isinstance(game, Game):
+            self._game = game
+        
+        else:
+            raise Exception("Game must be of instance of Game class")
