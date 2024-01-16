@@ -96,6 +96,7 @@ class TestGame:
         player = Player("Nick")
         player_2 = Player("Ari")
         Result(player, game, 5000)
+        # Result(player, game, 5002) Conflicting with test that checks score is not above 5000 and I believe this was an oversight.  Adding a new test to correct.
         Result(player, game, 4998)
         Result(player_2, game, 4999)
 
