@@ -1,130 +1,120 @@
 class Game:
     def __init__(self, title):
-
         self.title = title
-        self._results = []
-        self._players = []
-
+    
     @property
     def title(self):
-
         return self._title
     
     @title.setter
-    def title(self, title):
+    def title(self, value):
 
-        if((isinstance(title, str)) and (0 < len(title)) and 
-        not (hasattr(self, "title"))):
-            self._title = title
-        
+        if isinstance(value, str) and 0 < len(value) and not hasattr(self, "title"):
+            self._title = value
         else:
-            raise Exception("Invalid title or title was already made and can't be changed.")
+            raise Exception
 
     def results(self):
-        pass
+        return [result for result in Result.all if result.game == self]
 
     def players(self):
-        pass
+        return list(set(result.player for result in self.results()))
 
     def average_score(self, player):
-        pass
+        
+        player_avgs = [result.score for result in self.results() if player == result.player]
+
+        return sum(player_avgs)/len(player_avgs)
 
 class Player:
 
     all = []
 
     def __init__(self, username):
-
         self.username = username
-        self._results = []
-        self._games_played = []
+
+        Player.all.append(self)
     
     @property
     def username(self):
-
         return self._username
-    
+
     @username.setter
-    def username(self, username):
-
-        if((isinstance(username, str)) and (1 < len(username) < 17)):
-            self._username = username
-        
+    def username(self, value):
+        if isinstance(value, str) and 1 < len(value) < 17:
+            self._username = value
         else:
-            raise Exception("That is not a valid username")
+            raise Exception
 
-    def results(self, new_result=None):
-        from classes.result import Result
+    def results(self):
+        return [result for result in Result.all if result.player == self]
 
-         if new_result and isinstance(new_result, Result):
-            if new_result not in self._results:
-                self._result.append(new_result)
-
-        return self._results # return a list of all the result
-
-    def games_played(self, new_game=None):
-        from classes.game import Game
-        pass
+    def games_played(self): #gets unique list of games played by player
+        return list(set(result.game for result in self.results()))
 
     def played_game(self, game):
-        pass
+        if game in self.games_played():
+            return True
+        else:
+            return False
 
     def num_times_played(self, game):
-        pass
+        return len([result for result in self.results() if result.game == game])
+    
+    @classmethod
+    def highest_scored(cls, game):
+        best_player = None
+        highest_score = 0
+
+        for player in cls.all:
+            if player in game.players():
+                if highest_score < game.average_score(player):
+                    highest_score = game.average_score(player)
+                    best_player = player
+
+        return best_player
 
 class Result:
 
     all = []
 
     def __init__(self, player, game, score):
-        
         self.player = player
         self.game = game
         self.score = score
 
-        player.results(self)
-    
+        Result.all.append(self)
+
     @property
     def score(self):
-
         return self._score
 
     @score.setter
-    def score(self, score):
-
-        if((isinstance(score, int)) and (0 < score < 5001) and 
-        not (hasattr(self, "score"))):
-            self._score = score
-        
+    def score(self, value):
+        if isinstance(value, int) and 0 < value < 5001 and not hasattr(self, "score"):
+            self._score = value
         else:
-            raise Exception("Invalid score or score was already made and can't be changed.")
+            raise Exception
     
     @property
     def player(self):
-
         return self._player
-    
-    @player.setter
-    def player(self, player):
-        from classes.player import Player
 
-        if isinstance(player, Player):
-            self._player = player
-        
+    @player.setter
+    def player(self, value):
+        if isinstance(value, Player):
+            self._player = value
         else:
-            raise Exception("Player must be of instance of Player class")
+            raise Exception
     
     @property
     def game(self):
-
         return self._game
     
     @game.setter
-    def game(self, game):
-        from classes.game import Game
-
-        if isinstance(game, Game):
-            self._game = game
-        
+    def game(self, value):
+        if isinstance(value, Game):
+            self._game = value
         else:
-            raise Exception("Game must be of instance of Game class")
+            raise Exception
+    
